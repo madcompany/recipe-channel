@@ -1,0 +1,19 @@
+{
+    "name": "recipe/channel",
+    "description": "recipe channel api",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "jylee08",
+            "email": "jylee08@cafe24corp.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.0.0",
+        "guzzlehttp/guzzle": "~6.0",
+        "ext-json": "^1.6"
+    },
+    "autoload": {
+        "psr-4": {"Recipe\\": "src/"}
+    }
+}
