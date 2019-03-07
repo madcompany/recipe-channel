@@ -1,0 +1,77 @@
+{
+  "common": {
+    "fields": [
+      {
+        "required": true,
+        "display": false,
+        "dynamic": false,
+        "label": "메세지",
+        "name": "message",
+        "placeholder": "메세지를 입력하세요. ",
+        "data_type": "string",
+        "type": "text"
+      },
+      {
+        "required": false,
+        "display": false,
+        "dynamic": false,
+        "label": "사진",
+        "name": "picture",
+        "placeholder": "사진 URL 을 입력하세요. ",
+        "data_type": "string",
+        "type": "text"
+      }
+    ],
+    "ingredients": [
+      {
+        "label": "사진",
+        "name": "picture"
+      },
+      {
+        "label": "내용",
+        "name": "message"
+      }
+    ],
+    "meta": {
+      "data_selector_field": ""
+    }
+  },
+  "100006": {
+    "fields": [
+      {
+        "required": true,
+        "display": false,
+        "dynamic": false,
+        "label": "메세지",
+        "name": "caption",
+        "placeholder": "메세지를 입력하세요. ",
+        "data_type": "string",
+        "type": "text"
+      },
+      {
+        "required": false,
+        "display": false,
+        "dynamic": false,
+        "label": "사진",
+        "name": "url",
+        "placeholder": "사진 URL 을 입력하세요. ",
+        "data_type": "string",
+        "type": "text"
+      }
+    ],
+    "ingredients": [
+      {
+        "label": "사진",
+        "name": "picture"
+      },
+      {
+        "label": "내용",
+        "name": "message"
+      }
+    ],
+    "meta": {
+      "data_selector_field": ""
+    }
+  }
+}
+

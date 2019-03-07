@@ -11,7 +11,8 @@
     "require": {
         "php": ">=7.0.0",
         "guzzlehttp/guzzle": "~6.0",
-        "ext-json": "^1.6"
+        "ext-json": "^1.6",
+        "ext-apache": "*"
     },
     "autoload": {
         "psr-4": {"Recipe\\": "src/"}

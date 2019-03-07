@@ -1,231 +1,191 @@
-# Using Monolog
+# Using Recipe Channel API
 
 - [Installation](#installation)
-- [Core Concepts](#core-concepts)
-- [Log Levels](#log-levels)
-- [Configuring a logger](#configuring-a-logger)
-- [Adding extra data in the records](#adding-extra-data-in-the-records)
-- [Leveraging channels](#leveraging-channels)
-- [Customizing the log format](#customizing-the-log-format)
+- [Trigger Field API](#trigger-field-api)
+- [Documentation](#documentation)
+
 
 ## Installation
 
-Monolog is available on Packagist ([monolog/monolog](http://packagist.org/packages/monolog/monolog))
+Recipe Channel API is available on Packagist ([recipe/channel](http://packagist.org/packages/recipe/channel))
 and as such installable via [Composer](http://getcomposer.org/).
 
 ```bash
-composer require monolog/monolog
+composer require recipe/channel
 ```
 
 If you do not use Composer, you can grab the code from GitHub, and use any
 PSR-0 compatible autoloader (e.g. the [Symfony2 ClassLoader component](https://github.com/symfony/ClassLoader))
-to load Monolog classes.
+to load Recipe Channel API classes.
 
-## Core Concepts
+## Trigger Field API
 
-Every `Logger` instance has a channel (name) and a stack of handlers. Whenever
-you add a record to the logger, it traverses the handler stack. Each handler
-decides whether it fully handled the record, and if so, the propagation of the
-record ends there.
+###1. 개요
 
-This allows for flexible logging setups, for example having a `StreamHandler` at
-the bottom of the stack that will log anything to disk, and on top of that add
-a `MailHandler` that will send emails only when an error message is logged.
-Handlers also have a `$bubble` property which defines whether they block the
-record or not if they handled it. In this example, setting the `MailHandler`'s
-`$bubble` argument to false means that records handled by the `MailHandler` will
-not propagate to the `StreamHandler` anymore.
+Recipe 서비스 각 채널에서 준수해야 할 레시피 생성시 트리거 조건 입력과 관련된 프로토콜입니다.
+이 프로토콜은 Recipe 서비스에서 레시피를 등록시 트리거 조건 입력폼을 만들고 입력한 데이터를 검증 할 때 사용됩니다.
 
-You can create many `Logger`s, each defining a channel (e.g.: db, request,
-router, ..) and each of them combining various handlers, which can be shared
-or not. The channel is reflected in the logs and allows you to easily see or
-filter records.
+###2. 프로토콜 상세
 
-Each Handler also has a Formatter, a default one with settings that make sense
-will be created if you don't set one. The formatters normalize and format
-incoming records so that they can be used by the handlers to output useful
-information.
+| Method | GET  |
+---------|:------|
+| URL | 카페24 개발자 센터 레시피 관리에서 등록 할 수 있습니다. |
+| Headers | Accept: application/json|           
+|         |Accept-Charset: utf-8|
+|         |Accept-Encoding: gzip, deflate|
+|         |accept-language: {{language_code}}|
+|         |Content-Type: application/json|
+|         |X-Request-ID: {{random_uuid}} |
 
-Custom severity levels are not available. Only the eight
-[RFC 5424](http://tools.ietf.org/html/rfc5424) levels (debug, info, notice,
-warning, error, critical, alert, emergency) are present for basic filtering
-purposes, but for sorting and other use cases that would require
-flexibility, you should add Processors to the Logger that can add extra
-information (tags, user ip, ..) to the records before they are handled.
+####2.1. Example
+```bash
+4.1.1.2. Example
+GET {{trigger_field_api_url}} HTTP/1.1
+Host: api.app.com
+ 
+Accept: application/json
+Accept-Charset: utf-8
+Accept-Encoding: gzip, deflate
+accept-language: {{language_code}}
+X-Request-ID: {{random_uuid}}
+```
 
-## Log Levels
+###3. Response
 
-Monolog supports the logging levels described by [RFC 5424](http://tools.ietf.org/html/rfc5424).
+####3.1. HTTP 
 
-- **DEBUG** (100): Detailed debug information.
+| Status | 200 |
+|-------|-------|
+| Header | Content-Type application/json; charset=utf-8 |
 
-- **INFO** (200): Interesting events. Examples: User logs in, SQL logs.
+####3.2. body
 
-- **NOTICE** (250): Normal but significant events.
+| 항목 | 설명 | 필수여부 |
+|:-----|:----|:---------|
+|fields|필드 리스트|Required|
+|fields[].label|항목 라벨명|Required|
+|fields[].name|항목 필드명|Required|
+|fields[].data_type|데이터 타입 ('string','number','date') |  |
+|                   |(기본값 : 'string')                   ||
+|fields[].type| HTML input 타입 ('text','select') ||
+|               |    (기본값 : 'text')       |         |
+|fields[].default_value|기본값||
+|fields[].default_operator|기본 필터링 연산 방법||
+|       | eq : 일치 (Equal)      |       |
+|       | neq : 비일치 (Not Equal)      |       |
+|       | like : 포함 (Like)      |       |
+|       | nlike : 미포함 (Not Like)      |       |
+|       | ge : 이상 (Greater then or Equal)      |       |
+|       | le : 이하 (Less then or Equal)      |       |
+|       | gt : 초과 (Greater then)      |       |
+|       |  lt : 미만 (Less then)     |       |
+|fields[].dynamic|동적 옵션 여부 (true,false)||
+|   |   (기본값 : false) | |
+|fields[].display| 기본 노출 할 입력항목 여부 (true, false) ||
+|   |  (기본값 : false) |   |
+|fields[].required|필수입력 여부 (true, false)||
+|   |  (기본값 : false) |   |
+|fields[].placeholder|힌트 (값의 '예' 또는 '짤막한 설명')||
+|fields[].options|정적 옵션||
+|fields[].options[].label|옵션 라벨	||
+|fields[].options[].value| 옵션 값||
+|ingredients|재료 리스트 배열||
+|ingredients[].label|항목 라벨||
+|ingredients[].name|항목 필드명|required|
+|ingredients[].description|항목 상세 설명 (또는 값 예)|required|
+|meta.data_selector_field|이벤트 데이터 선택용 필드명||
 
-- **WARNING** (300): Exceptional occurrences that are not errors. Examples:
-  Use of deprecated APIs, poor use of an API, undesirable things that are not
-  necessarily wrong.
+####3.3. Example
 
-- **ERROR** (400): Runtime errors that do not require immediate action but
-  should typically be logged and monitored.
+```bash
+HTTP/1.1 200 OKContent-Type: application/json; charset=utf-8
+  
+{
+    "fields": [
+        {
+            "data_type": "number",
+            "type": "select",
+            "required": true,
+            "dynamic": true,
+            "label": "쇼핑몰",
+            "name": "shop_no"
+        },
+        {
+            "data_type": "string",
+            "label": "상품명",
+            "name": "product_name"
+        },
+        {
+            "data_type": "string",
+            "type": "select",
+            "dynamic": true,
+            "label": "상품분류",
+            "name": "collection"
+        },
+        {
+            "data_type": "string",
+            "type": "select",
+            "label": "진열상태",
+            "name": "display",
+            "options": [
+                {"label": "진열함", "value": "T"},
+                {"label": "진열안함", "value": "F"}
+            ]
+        },
+        ...
+    ],
+    "ingredients": [
+        {
+            "label": "상품명",
+            "name": "product_name",
+            "description": ""
+        }
+        {
+            "label": "소비자가",
+            "name": "retail_price",
+            "description": "1000"
+        }
+    ],
+    "meta": {
+        "data_selector_field": "shop_no"
+    }
+}
+```
 
-- **CRITICAL** (500): Critical conditions. Example: Application component
-  unavailable, unexpected exception.
-
-- **ALERT** (550): Action must be taken immediately. Example: Entire website
-  down, database unavailable, etc. This should trigger the SMS alerts and wake
-  you up.
-
-- **EMERGENCY** (600): Emergency: system is unusable.
-
-## Configuring a logger
-
-Here is a basic setup to log to a file and to firephp on the DEBUG level:
+###4. Trigger Field API 사용방법
 
 ```php
+
 <?php
+/**
+ * 트리거 필드데이터를 레시피에 전달 합니다.
+ * 앱스토어 > 레시피관리 > 채널관리 에서 트리거 데이터 전달 URL 을 설정할 수 있습니다.
 
-use Monolog\Logger;
-use Monolog\Handler\StreamHandler;
-use Monolog\Handler\FirePHPHandler;
+ */
+require_once __DIR__ . '/../vendor/autoload.php';
 
-// Create the logger
-$logger = new Logger('my_logger');
-// Now add some handlers
-$logger->pushHandler(new StreamHandler(__DIR__.'/my_app.log', Logger::DEBUG));
-$logger->pushHandler(new FirePHPHandler());
+use Recipe\Recipe;
 
-// You can now use your logger
-$logger->addInfo('My logger is now ready');
+$recipe = new Recipe();
+
+// 트리거 필드 정보 리턴
+$url = __DIR__ . '/json/trigger.json';
+
+echo $recipe->getTriggerData($url);
+
+// 결과 리턴
+echo json_encode($result);
+
 ```
 
-Let's explain it. The first step is to create the logger instance which will
-be used in your code. The argument is a channel name, which is useful when
-you use several loggers (see below for more details about it).
+## Documentation
 
-The logger itself does not know how to handle a record. It delegates it to
-some handlers. The code above registers two handlers in the stack to allow
-handling records in two different ways.
+### 채널 API 프로토콜
 
-Note that the FirePHPHandler is called first as it is added on top of the
-stack. This allows you to temporarily add a logger with bubbling disabled if
-you want to override other configured loggers.
-
-> If you use Monolog standalone and are looking for an easy way to
-> configure many handlers, the [theorchard/monolog-cascade](https://github.com/theorchard/monolog-cascade)
-> can help you build complex logging configs via PHP arrays, yaml or json configs.
-
-## Adding extra data in the records
-
-Monolog provides two different ways to add extra informations along the simple
-textual message.
-
-### Using the logging context
-
-The first way is the context, allowing to pass an array of data along the
-record:
-
-```php
-<?php
-
-$logger->addInfo('Adding a new user', array('username' => 'Seldaek'));
-```
-
-Simple handlers (like the StreamHandler for instance) will simply format
-the array to a string but richer handlers can take advantage of the context
-(FirePHP is able to display arrays in pretty way for instance).
-
-### Using processors
-
-The second way is to add extra data for all records by using a processor.
-Processors can be any callable. They will get the record as parameter and
-must return it after having eventually changed the `extra` part of it. Let's
-write a processor adding some dummy data in the record:
-
-```php
-<?php
-
-$logger->pushProcessor(function ($record) {
-    $record['extra']['dummy'] = 'Hello world!';
-
-    return $record;
-});
-```
-
-Monolog provides some built-in processors that can be used in your project.
-Look at the [dedicated chapter](https://github.com/Seldaek/monolog/blob/master/doc/02-handlers-formatters-processors.md#processors) for the list.
-
-> Tip: processors can also be registered on a specific handler instead of
-  the logger to apply only for this handler.
-
-## Leveraging channels
-
-Channels are a great way to identify to which part of the application a record
-is related. This is useful in big applications (and is leveraged by
-MonologBundle in Symfony2).
-
-Picture two loggers sharing a handler that writes to a single log file.
-Channels would allow you to identify the logger that issued every record.
-You can easily grep through the log files filtering this or that channel.
-
-```php
-<?php
-
-use Monolog\Logger;
-use Monolog\Handler\StreamHandler;
-use Monolog\Handler\FirePHPHandler;
-
-// Create some handlers
-$stream = new StreamHandler(__DIR__.'/my_app.log', Logger::DEBUG);
-$firephp = new FirePHPHandler();
-
-// Create the main logger of the app
-$logger = new Logger('my_logger');
-$logger->pushHandler($stream);
-$logger->pushHandler($firephp);
-
-// Create a logger for the security-related stuff with a different channel
-$securityLogger = new Logger('security');
-$securityLogger->pushHandler($stream);
-$securityLogger->pushHandler($firephp);
-
-// Or clone the first one to only change the channel
-$securityLogger = $logger->withName('security');
-```
-
-## Customizing the log format
-
-In Monolog it's easy to customize the format of the logs written into files,
-sockets, mails, databases and other handlers. Most of the handlers use the
-
-```php
-$record['formatted']
-```
-
-value to be automatically put into the log device. This value depends on the
-formatter settings. You can choose between predefined formatter classes or
-write your own (e.g. a multiline text file for human-readable output).
-
-To configure a predefined formatter class, just set it as the handler's field:
-
-```php
-// the default date format is "Y-m-d H:i:s"
-$dateFormat = "Y n j, g:i a";
-// the default output format is "[%datetime%] %channel%.%level_name%: %message% %context% %extra%\n"
-$output = "%datetime% > %level_name% > %message% %context% %extra%\n";
-// finally, create a formatter
-$formatter = new LineFormatter($output, $dateFormat);
-
-// Create a handler
-$stream = new StreamHandler(__DIR__.'/my_app.log', Logger::DEBUG);
-$stream->setFormatter($formatter);
-// bind it to a logger object
-$securityLogger = new Logger('security');
-$securityLogger->pushHandler($stream);
-```
-
-You may also reuse the same formatter between multiple handlers and share those
-handlers between multiple loggers.
-
-[Handlers, Formatters and Processors](02-handlers-formatters-processors.md) &rarr;
+* [Recipe 채널 API 프로토콜 - 공통 규약](https://wiki.simplexi.com/pages/viewpage.action?pageId=1086099666)
+* [Recipe 채널 API 프로토콜 - 채널 계정 연결](https://wiki.simplexi.com/pages/viewpage.action?pageId=1084232802)
+* [Recipe 채널 API 프로토콜 - 레시피 생성 - 트리거](https://wiki.simplexi.com/pages/viewpage.action?pageId=1084232803)
+* [Recipe 채널 API 프로토콜 - 트리거 이벤트 전달](https://wiki.simplexi.com/pages/viewpage.action?pageId=1084232805)
+* [Recipe 채널 API 프로토콜 - 레시피 생성 - 액션](https://wiki.simplexi.com/pages/viewpage.action?pageId=1084232804)
+* [Recipe 채널 API 프로토콜 - 액션 API](https://wiki.simplexi.com/pages/viewpage.action?pageId=1084232806)
+* [Recipe 채널 API 프로토콜 - 서비스 상태](https://wiki.simplexi.com/pages/viewpage.action?pageId=1084232807)

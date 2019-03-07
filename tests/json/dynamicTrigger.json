@@ -1,0 +1,17 @@
+{
+  "data": [
+    {
+      "name": "collection",
+      "options": [
+        {
+          "label": "Recommend Products",
+          "value": "123"
+        },
+        {
+          "label": "Hit Products",
+          "value": "456"
+        }
+      ]
+    }
+  ]
+}
