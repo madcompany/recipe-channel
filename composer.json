@@ -14,6 +14,6 @@
         "ext-json": "^1.6"
     },
     "autoload": {
-        "psr-4": {"Recipe\\": "src/"}
+        "psr-4": {"Cafe24corp\\": "src/"}
     }
 }
