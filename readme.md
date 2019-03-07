@@ -8,7 +8,7 @@
 
 ## Installation
 
-Recipe Channel API is available on Packagist ([recipe/channel](http://packagist.org/packages/recipe/channel))
+Recipe Channel API is available on Packagist ([cafe24corp/recipe-channel](http://packagist.org/packages/cafe24corp/recipe-channel))
 and as such installable via [Composer](http://getcomposer.org/).
 
 ```bash
