@@ -105,7 +105,7 @@ $url = __DIR__ . '/json/trigger.json';
 }
  */
 
-echo $recipe->getTriggerData($url);
+$result = $recipe->getTriggerData($url);
 
 // 결과 리턴
 echo json_encode($result);
