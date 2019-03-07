@@ -1,8 +1,8 @@
 <?php
 
-namespace Recipe;
+namespace Cafe24corp;
 
-use Recipe\Exception\RecipeException;
+use Cafe24corp\Exception\RecipeException;
 /**
  * Class Recipe
  *

@@ -12,7 +12,7 @@ Recipe Channel API is available on Packagist ([recipe/channel](http://packagist.
 and as such installable via [Composer](http://getcomposer.org/).
 
 ```bash
-composer require recipe/channel
+composer require cafe24corp/recipe-channel
 ```
 
 If you do not use Composer, you can grab the code from GitHub, and use any
@@ -44,7 +44,7 @@ CHANNEL_NO, CHANNEL_ID, CHANNEL_SECRET 는 개발자센터 (https://developer.ca
 ```php
 <?php
 
-use Recipe\Recipe;
+use Cafe24corp\Recipe;
 
 $recipe = new Recipe();
 
@@ -124,7 +124,7 @@ echo json_encode($result);
  * 요청은 POST 로 전달되면 동적 필드의 데이터를 로드하여 전달하셔야 합니다.
  */
 
-use Recipe\Recipe;
+use Cafe24corp\Recipe;
 
 $recipe = new Recipe();
 
@@ -192,8 +192,8 @@ echo json_encode(['data' => $dynamicFieldData ]);
  * 유저별 트리거 리스트를 검색하여 결과 값을 채널쪽에 저장합니다.
  */
 
-use Recipe\Recipe;
-use Recipe\Exception;
+use Cafe24corp\Recipe;
+use Cafe24corp\Exception;
 
 $recipe = new Recipe();
 
@@ -261,8 +261,8 @@ try {
  * 트리거 이벤트 전달
  */
 
-use Recipe\Recipe;
-use Recipe\Exception;
+use Cafe24corp\Recipe;
+use Cafe24corp\Exception;
 
 $recipe = new Recipe();
 
@@ -303,7 +303,7 @@ try {
 ```php
 <?php
 
-use Recipe\Recipe;
+use Cafe24corp\Recipe;
 
 $recipe = new Recipe();
 
@@ -323,7 +323,7 @@ echo json_encode($result);
 ```php
 <?php
 
-use Recipe\Recipe;
+use Cafe24corp\Recipe;
 
 $recipe = new Recipe();
 
@@ -355,7 +355,7 @@ echo json_encode(['data' => $dynamicFieldData ]);
  *
  */
 
-use Recipe\Recipe;
+use Cafe24corp\Recipe;
 
 $recipe = new Recipe();
 

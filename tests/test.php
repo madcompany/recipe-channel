@@ -1,8 +1,8 @@
 <?php
 require_once __DIR__ . '/../vendor/autoload.php';
 
-use Recipe\Recipe;
-use Recipe\Exception;
+use Cafe24corp\Recipe;
+use Cafe24corp\Exception;
 
 $recipe = new Recipe();
 

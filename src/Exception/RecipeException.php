@@ -1,5 +1,5 @@
 <?php
-namespace Recipe\Exception;
+namespace Cafe24corp\Exception;
 
 class RecipeException extends \Exception {
 

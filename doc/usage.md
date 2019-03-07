@@ -11,7 +11,7 @@ Recipe Channel API is available on Packagist ([recipe/channel](http://packagist.
 and as such installable via [Composer](http://getcomposer.org/).
 
 ```bash
-composer require recipe/channel
+composer require cafe24corp/recipe-channel
 ```
 
 If you do not use Composer, you can grab the code from GitHub, and use any
@@ -164,7 +164,7 @@ HTTP/1.1 200 OKContent-Type: application/json; charset=utf-8
  */
 require_once __DIR__ . '/../vendor/autoload.php';
 
-use Recipe\Recipe;
+use Cafe24corp\Recipe;
 
 $recipe = new Recipe();
 
